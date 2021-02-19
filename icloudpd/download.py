@@ -32,7 +32,7 @@ def set_utime(download_path, created_date):
     ctime = time.mktime(created_date.timetuple())
     os.utime(download_path, (ctime, ctime))
 
-def download_media(icloud, photo, download_path, size):
+def download_media(icloud, photo, download_path, size, download_timeout):
     """Download the photo to path, with retries and error handling"""
     logger = setup_logger()
 
@@ -47,7 +47,7 @@ def download_media(icloud, photo, download_path, size):
 
     for retries in range(constants.MAX_RETRIES):
         try:
-            photo_response = photo.download(size)
+            photo_response = photo.download(size, timeout=download_timeout)
             if photo_response:
                 temp_download_path = download_path + ".part"
                 with open(temp_download_path, "wb") as file_obj:

@@ -193,6 +193,13 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     type=click.IntRange(1),
     default=1,
 )
+@click.option(
+    "--download-timeout",
+    help="Download timeout in seconds. Default: 180",
+    metavar="<download_timeout>",
+    type=click.IntRange(0),
+    default=180,
+)
 @click.version_option()
 # pylint: disable-msg=too-many-arguments,too-many-statements
 # pylint: disable-msg=too-many-branches,too-many-locals
@@ -224,6 +231,7 @@ def main(
         no_progress_bar,
         notification_script,
         threads_num,    # pylint: disable=W0613
+        download_timeout
 ):
     """Download all iCloud photos to a local directory"""
 
@@ -481,7 +489,7 @@ def main(
                     truncated_path)
 
                 download_result = download.download_media(
-                    icloud, photo, download_path, download_size
+                    icloud, photo, download_path, download_size, download_timeout
                 )
 
                 if download_result:
@@ -541,7 +549,7 @@ def main(
                         logger.set_tqdm_description(
                             "Downloading %s" % truncated_path)
                         download.download_media(
-                            icloud, photo, lp_download_path, lp_size
+                            icloud, photo, lp_download_path, lp_size, download_timeout
                         )
 
     consecutive_files_found = Counter(0)
