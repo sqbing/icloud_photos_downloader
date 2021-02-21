@@ -200,6 +200,13 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     type=click.IntRange(0),
     default=180,
 )
+@click.option(
+    "--recent-offset",
+    help="Download from x recent media files. Default: 0",
+    metavar="<recent_offset>",
+    type=click.IntRange(0),
+    default=0,
+)
 @click.version_option()
 # pylint: disable-msg=too-many-arguments,too-many-statements
 # pylint: disable-msg=too-many-branches,too-many-locals
@@ -231,7 +238,8 @@ def main(
         no_progress_bar,
         notification_script,
         threads_num,    # pylint: disable=W0613
-        download_timeout
+        download_timeout,
+        recent_offset
 ):
     """Download all iCloud photos to a local directory"""
 
@@ -333,6 +341,17 @@ def main(
     if recent is not None:
         photos_count = recent
         photos = itertools.islice(photos, recent)
+
+    if recent_offset > 0:
+        if photos_count < recent_offset:
+            logger.error(
+                "Invalid recent offset %d, iCloud has %d photos only",
+                recent_offset,
+                photos_count
+            )
+            sys.exit(1)
+        photos_count -= recent_offset
+        photos = itertools.islice(photos, recent_offset, None)
 
     tqdm_kwargs = {"total": photos_count}
 

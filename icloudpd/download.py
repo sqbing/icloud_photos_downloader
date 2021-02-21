@@ -71,18 +71,18 @@ def download_media(icloud, photo, download_path, size, download_timeout):
                     "Session error, re-authenticating...",
                     logging.ERROR)
                 if retries > 0:
-                    # If the first reauthentication attempt failed,
+                    # If the first re-authentication attempt failed,
                     # start waiting a few seconds before retrying in case
                     # there are some issues with the Apple servers
                     time.sleep(constants.WAIT_SECONDS)
 
                 icloud.authenticate()
             else:
-                # you end up here when p.e. throttleing by Apple happens
+                # you end up here when p.e. throttled by Apple happens
                 wait_time = (retries + 1) * constants.WAIT_SECONDS
                 logger.tqdm_write(
-                    "Error downloading %s, retrying after %d seconds..."
-                    % (photo.filename, wait_time),
+                    "Error downloading %s, '%s', retrying after %d seconds..."
+                    % (photo.filename, str(ex), wait_time),
                     logging.ERROR,
                 )
                 time.sleep(wait_time)
